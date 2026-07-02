@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Банк аргументов — ЕГЭ Тренажёр{% endblock %}
+{% block content %}
+<div class="container">
+  <a href="/py/" class="back-link">← Главная</a>
+  <div class="page-title">📚 Банк аргументов и клише</div>
+  <div class="page-subtitle">Произведения для сочинения, речевые клише и аргументы по темам</div>
+
+  <div class="section-tabs" id="arg-tabs">
+    <button class="tab-btn active" data-tab="cliches">💬 Речевые клише</button>
+    <button class="tab-btn" data-tab="literature">📖 Литература по темам</button>
+    <button class="tab-btn" data-tab="problems">🔑 Проблемы + аргументы</button>
+    <button class="tab-btn" data-tab="math-reference">📐 Справочник (Матем.)</button>
+  </div>
+
+  <div data-tab-content="cliches">
+    <div class="grid-2">
+      <div class="card">
+        <div class="guide-category">Для формулировки проблемы</div>
+        <ul class="cliche-list">
+          <li>Автор текста [ФИО] обращается к проблеме…</li>
+          <li>В центре внимания [ФИО] — вопрос о…</li>
+          <li>Текст [ФИО] заставляет задуматься о…</li>
+          <li>В своём тексте автор поднимает важную проблему…</li>
+          <li>Проблема, которую ставит автор, — это…</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="guide-category">Для комментария</div>
+        <ul class="cliche-list">
+          <li>Чтобы привлечь внимание читателей, автор…</li>
+          <li>Автор не случайно описывает / акцентирует внимание / сравнивает…</li>
+          <li>Этот пример показывает, что…</li>
+          <li>Рассуждая над этой проблемой, автор…</li>
+          <li>Данные примеры связаны между собой: они [противопоставлены / дополняют / подтверждают]…</li>
+          <li>Писатель сопоставляет … и …, что позволяет сделать вывод о…</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="guide-category">Для позиции автора</div>
+        <ul class="cliche-list">
+          <li>Автор убеждён, что…</li>
+          <li>По мнению автора, …</li>
+          <li>Позиция автора выражена чётко: …</li>
+          <li>Авторская точка зрения состоит в том, что…</li>
+          <li>Автор приходит к выводу о том, что…</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="guide-category">Для своей позиции</div>
+        <ul class="cliche-list">
+          <li>Я согласен с позицией автора и считаю, что…</li>
+          <li>Трудно не согласиться с тем, что…</li>
+          <li>Я разделяю точку зрения автора: …</li>
+          <li>На мой взгляд, автор совершенно прав, утверждая, что…</li>
+          <li>Позволю себе не согласиться с автором в том, что…</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="guide-category">Для вывода / заключения</div>
+        <ul class="cliche-list">
+          <li>Таким образом, …</li>
+          <li>Итак, можно сделать вывод: …</li>
+          <li>Подводя итог, хочется сказать…</li>
+          <li>Всё вышесказанное позволяет утверждать, что…</li>
+          <li>В заключение хочется выразить надежду на то, что…</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="guide-category">Переходы между абзацами</div>
+        <ul class="cliche-list">
+          <li>Для подтверждения своей мысли обратимся к тексту.</li>
+          <li>В подтверждение этой точки зрения приведу пример из…</li>
+          <li>Мою позицию подтверждает и следующий аргумент…</li>
+          <li>Данный пример убедительно доказывает…</li>
+          <li>Что касается второго примера, то…</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div data-tab-content="literature" style="display:none">
+    <div style="margin-bottom:12px;color:var(--text-muted);font-size:0.88rem">Произведения по темам для итогового сочинения ЕГЭ</div>
+    {% set books = [
+      ('Война и мир','Л.Н. Толстой','Патриотизм, честь, долг, смысл жизни, нравственный выбор, любовь, семья','#fef3c7'),
+      ('Преступление и наказание','Ф.М. Достоевский','Преступление и наказание, совесть, теория «вшей», гуманизм','#fef2f2'),
+      ('Мастер и Маргарита','М.А. Булгаков','Добро и зло, творчество, трусость, власть, любовь','#f3e8ff'),
+      ('Отцы и дети','И.С. Тургенев','Конфликт поколений, нигилизм, любовь, традиции','#eff6ff'),
+      ('Тихий Дон','М.А. Шолохов','Война, судьба человека, Родина, нравственный выбор','#f0fdf4'),
+      ('Судьба человека','М.А. Шолохов','Стойкость, мужество, судьба, война, гуманизм','#fef3c7'),
+      ('Капитанская дочка','А.С. Пушкин','Честь, долг, милосердие, любовь, верность','#fef2f2'),
+      ('Обломов','И.А. Гончаров','Лень, апатия, смысл жизни, мечты vs действительность','#eff6ff'),
+      ('Ревизор','Н.В. Гоголь','Коррупция, чиновничество, лицемерие, страх','#fef3c7'),
+      ('Чистый Дон','А.П. Чехов «Вишнёвый сад»','Время, перемены, ответственность, прошлое и будущее','#f0fdf4'),
+      ('Матрёнин двор','А.И. Солженицын','Нравственность, доброта, деревня, страдание','#f3e8ff'),
+      ('Горе от ума','А.С. Грибоедов','Ум и глупость, общество, реформы, конфликт идей','#eff6ff'),
+    ] %}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+      {% for title, author, themes, color in books %}
+      <div style="background:{{ color }};border-radius:var(--radius);padding:16px;border:1px solid var(--border)">
+        <div style="font-weight:700;margin-bottom:4px">{{ title }}</div>
+        <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:8px">{{ author }}</div>
+        <div style="font-size:0.8rem;color:var(--text)">
+          <span style="font-weight:600">Темы:</span> {{ themes }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div data-tab-content="problems" style="display:none">
+    {% set problems = [
+      ('Роль книг и чтения','«Преступление и наказание» (чтение Евангелия меняет Раскольникова), «Обломов» (Штольц vs Обломов — книжное и деятельное)'),
+      ('Человек и природа','«Прощание с Матёрой» Распутина, «Слово о полку Игореве», «Тихий Дон» (природа как символ судьбы)'),
+      ('Патриотизм, Родина','«Война и мир» (Наташа Ростова, Тушин), «Судьба человека», «Тихий Дон»'),
+      ('Нравственный выбор','«Капитанская дочка» (Гринёв vs Швабрин), «Преступление и наказание», «Мастер и Маргарита» (трусость Пилата)'),
+      ('Любовь, верность','«Война и мир» (Наташа и Андрей), «Мастер и Маргарита», «Ромео и Джульетта» (Шекспир)'),
+      ('Смысл жизни','«Обломов», «Война и мир» (духовные поиски Безухова и Болконского), «Отцы и дети» (нигилизм Базарова)'),
+      ('Одиночество, непонимание','«Горе от ума» (Чацкий), «Обломов», «Лермонтов «Герой нашего времени»'),
+      ('Честь и бесчестие','«Капитанская дочка», «Дуэль» Чехова, «Тихий Дон»'),
+      ('Трусость и мужество','«Мастер и Маргарита» (Пилат), «Судьба человека», «Война и мир»'),
+      ('Добро и зло','«Мастер и Маргарита» (Воланд), «Преступление и наказание», «Фауст» Гёте'),
+    ] %}
+    <div style="display:flex;flex-direction:column;gap:12px">
+      {% for problem, args in problems %}
+      <div class="card" style="padding:16px">
+        <div style="font-weight:700;color:var(--primary);margin-bottom:8px">{{ problem }}</div>
+        <div style="font-size:0.88rem;color:var(--text)">{{ args }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div data-tab-content="math-reference" style="display:none">
+    <div class="grid-2">
+      {% set refs = [
+        ('Тригонометрические формулы','sin²x + cos²x = 1\ntg x = sin x/cos x\nsin(α+β) = sin α cos β + cos α sin β\ncos(α+β) = cos α cos β − sin α sin β\nsin 2α = 2 sin α cos α\ncos 2α = cos²α − sin²α\n\nЗначения:\nsin 0° = 0, sin 30° = 1/2, sin 45° = √2/2\nsin 60° = √3/2, sin 90° = 1\ncos 0° = 1, cos 30° = √3/2, cos 90° = 0'),
+        ('Производные','(c)′ = 0\n(xⁿ)′ = nxⁿ⁻¹\n(√x)′ = 1/(2√x)\n(1/x)′ = −1/x²\n(eˣ)′ = eˣ\n(aˣ)′ = aˣ ln a\n(ln x)′ = 1/x\n(log_a x)′ = 1/(x ln a)\n(sin x)′ = cos x\n(cos x)′ = −sin x\n(tg x)′ = 1/cos²x\n(ctg x)′ = −1/sin²x'),
+        ('Интегралы','∫ c dx = cx + C\n∫ xⁿ dx = xⁿ⁺¹/(n+1) + C (n≠−1)\n∫ 1/x dx = ln|x| + C\n∫ eˣ dx = eˣ + C\n∫ aˣ dx = aˣ/ln a + C\n∫ sin x dx = −cos x + C\n∫ cos x dx = sin x + C\n∫ 1/cos²x dx = tg x + C\n\nНьютон–Лейбниц:\n∫[a,b] f(x)dx = F(b)−F(a)'),
+        ('Геометрия','S прямоугольника = ab\nS треугольника = ½bh = ½ab·sinC\nS круга = πr²\nS трапеции = ½(a+b)h\n\nV куба = a³\nV параллелепипеда = abc\nV цилиндра = πr²h\nV конуса = ⅓πr²h\nV шара = ⁴⁄₃πr³\n\nТеорема Пифагора: c² = a²+b²\nТеорема косинусов: c²=a²+b²−2ab·cosC'),
+        ('Прогрессии','Арифметическая прогрессия:\naₙ = a₁ + (n−1)d\nSₙ = n(a₁+aₙ)/2 = n(2a₁+(n−1)d)/2\n\nГеометрическая прогрессия:\nbₙ = b₁ · qⁿ⁻¹\nSₙ = b₁(qⁿ−1)/(q−1), q≠1\nS∞ = b₁/(1−q), |q|<1'),
+        ('Теория вероятностей','P(A) = m/n (классич. определение)\n\nP(A+B) = P(A)+P(B) − P(AB)\nP(A·B) = P(A)·P(B) — если независимые\n\nФормула Бернулли:\nP(X=k) = Cₙᵏ·pᵏ·(1−p)ⁿ⁻ᵏ\n\nCₙᵏ = n! / (k!(n−k)!)\n\nСреднее: M(X) = np\nДисперсия: D(X) = np(1−p)'),
+      ] %}
+      {% for title, content in refs %}
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:12px;color:var(--primary)">{{ title }}</div>
+        <pre style="font-family:monospace;font-size:0.82rem;white-space:pre-wrap;color:var(--text);line-height:1.7">{{ content }}</pre>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('#arg-tabs .tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#arg-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    var target = this.dataset.tab;
+    document.querySelectorAll('[data-tab-content]').forEach(function(c) {
+      c.style.display = c.dataset.tabContent === target ? '' : 'none';
+    });
+  });
+});
+</script>
+{% endblock %}

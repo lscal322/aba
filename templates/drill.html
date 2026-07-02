@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}Задание №{{ task_num }} — {{ subj.title }}{% endblock %}
+{% block content %}
+<div class="container">
+  <a href="/py/subjects/{{ subject }}/drill" class="back-link">← Выбор задания</a>
+  <div class="page-title">🔁 Набивка руки: Задание №{{ task_num }}</div>
+  <div class="page-subtitle">{{ subj.title }} • Решай до 100% правильных подряд</div>
+
+  <div class="drill-progress-bar" style="margin-bottom:24px">
+    <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:var(--text-muted);margin-bottom:6px">
+      <span>Прогресс сессии</span>
+      <span><span id="drill-correct">0</span> правильных подряд / цель: 3</span>
+    </div>
+    <div style="height:10px;background:var(--border);border-radius:5px;overflow:hidden">
+      <div id="drill-progress" style="height:100%;background:linear-gradient(90deg,var(--success),var(--secondary));border-radius:5px;transition:width 0.4s;width:0%"></div>
+    </div>
+  </div>
+
+  {% if questions %}
+  <div id="drill-form" data-subject="{{ subject }}" data-task="{{ task_num }}" data-total="{{ questions|length }}">
+    <div id="drill-question-container">
+      {% set q = questions[0] %}
+      <div class="quiz-question" id="current-drill-q" data-qid="{{ q.id }}" data-correct="{{ q.correct_index }}" data-expl="{{ q.explanation or '' }}" data-wrong-expl='{{ q.wrong_expl | tojson }}'>
+        <div class="question-header">
+          <div class="question-number">Задание №{{ task_num }} — {{ q.section }}</div>
+          <span id="drill-counter" style="color:var(--text-muted);font-size:0.82rem">Вопрос 1 из {{ questions|length }}</span>
+        </div>
+        <div class="question-text" id="drill-q-text">{{ q.text }}</div>
+        <div class="options" id="drill-options">
+          {% set letters = ['А','Б','В','Г'] %}
+          {% for i in range(q.options_list|length) %}
+          <div class="option drill-option" data-idx="{{ i }}">
+            <div class="option-letter">{{ letters[i] }}</div>
+            <div>{{ q.options_list[i] }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="explanation" id="drill-explanation"></div>
+      </div>
+    </div>
+
+    <div id="drill-finish" style="display:none;text-align:center;padding:40px;background:white;border-radius:var(--radius);border:2px solid var(--success)">
+      <div style="font-size:3rem;margin-bottom:12px">🎉</div>
+      <div style="font-size:1.4rem;font-weight:800;color:var(--success);margin-bottom:8px">Отличная работа!</div>
+      <div style="color:var(--text-muted);margin-bottom:24px">Вы успешно отработали задание №{{ task_num }}</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="/py/subjects/{{ subject }}/drill/{{ task_num }}" class="btn btn-primary">🔁 Ещё раз</a>
+        <a href="/py/subjects/{{ subject }}/drill" class="btn btn-secondary">Другое задание</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  var allQuestions = {{ questions | tojson }};
+  var currentIdx = 0;
+  var correctStreak = 0;
+  var STREAK_GOAL = 3;
+  var letters = ['А','Б','В','Г'];
+
+  function loadQuestion(idx) {
+    if (idx >= allQuestions.length) idx = 0;
+    currentIdx = idx;
+    var q = allQuestions[idx];
+    document.getElementById('drill-counter').textContent = 'Вопрос ' + (idx+1) + ' из ' + allQuestions.length;
+    document.getElementById('drill-q-text').textContent = q.text;
+    var optsEl = document.getElementById('drill-options');
+    optsEl.innerHTML = '';
+    var opts = q.options_list || [];
+    opts.forEach(function(opt, i) {
+      var div = document.createElement('div');
+      div.className = 'option drill-option';
+      div.dataset.idx = i;
+      div.innerHTML = '<div class="option-letter">'+letters[i]+'</div><div>'+opt+'</div>';
+      div.addEventListener('click', handleDrillAnswer);
+      optsEl.appendChild(div);
+    });
+    var expEl = document.getElementById('drill-explanation');
+    expEl.style.display = 'none';
+    expEl.textContent = '';
+
+    var qBlock = document.getElementById('current-drill-q');
+    qBlock.dataset.qid = q.id;
+    qBlock.dataset.correct = q.correct_index;
+    qBlock.dataset.expl = q.explanation || '';
+    qBlock.dataset.wrongExpl = JSON.stringify(q.wrong_expl || {});
+    qBlock.className = 'quiz-question';
+  }
+
+  function updateProgress() {
+    var pct = Math.min(correctStreak / STREAK_GOAL * 100, 100);
+    document.getElementById('drill-progress').style.width = pct + '%';
+    document.getElementById('drill-correct').textContent = correctStreak;
+    if (correctStreak >= STREAK_GOAL) {
+      document.getElementById('current-drill-q').style.display = 'none';
+      document.getElementById('drill-finish').style.display = 'block';
+    }
+  }
+
+  function handleDrillAnswer() {
+    var block = document.getElementById('current-drill-q');
+    var correctIdx = parseInt(block.dataset.correct);
+    var myIdx = parseInt(this.dataset.idx);
+    var opts = block.querySelectorAll('.drill-option');
+    opts.forEach(function(o) { o.removeEventListener('click', handleDrillAnswer); });
+
+    if (myIdx === correctIdx) {
+      this.classList.add('correct-answer');
+      block.classList.add('correct');
+      correctStreak++;
+    } else {
+      this.classList.add('wrong-answer');
+      opts[correctIdx].classList.add('correct-answer');
+      block.classList.add('wrong');
+      correctStreak = 0;
+      var wrongExpl = {};
+      try { wrongExpl = JSON.parse(block.dataset.wrongExpl || '{}'); } catch(e){}
+      var expEl = document.getElementById('drill-explanation');
+      var weText = wrongExpl[String(myIdx)] || '';
+      expEl.innerHTML = '💡 ' + block.dataset.expl + (weText ? '<br><span style="color:#dc2626">Ваш ответ: '+weText+'</span>' : '');
+      expEl.style.display = 'block';
+    }
+
+    updateProgress();
+
+    if (correctStreak < STREAK_GOAL) {
+      setTimeout(function() {
+        var next = (currentIdx + 1) % allQuestions.length;
+        loadQuestion(next);
+      }, myIdx === correctIdx ? 800 : 2000);
+    }
+  }
+
+  document.querySelectorAll('.drill-option').forEach(function(opt) {
+    opt.addEventListener('click', handleDrillAnswer);
+  });
+  </script>
+
+  {% else %}
+  <div class="empty-state"><div class="icon">📭</div><div>Вопросы для задания №{{ task_num }} не найдены</div></div>
+  {% endif %}
+</div>
+{% endblock %}

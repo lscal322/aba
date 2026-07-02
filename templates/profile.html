@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Профиль — ЕГЭ Тренажёр{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">👤 Профиль</div>
+  <div class="page-subtitle">Ваш прогресс и статистика</div>
+
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:16px">{{ user.name }}</div>
+      <div style="color:var(--text-muted);font-size:0.88rem;margin-bottom:4px">{{ user.email }}</div>
+      <div style="margin-top:16px;display:flex;gap:16px">
+        <div>
+          <div style="font-size:2rem;font-weight:800;color:var(--primary)">{{ user.xp }}</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">XP</div>
+        </div>
+        <div>
+          <div style="font-size:2rem;font-weight:800;color:var(--secondary)">{{ user.tests_completed }}</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">Тестов</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px">Статистика по предметам</div>
+      {% for row in by_subject %}
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px">
+          <span>{{ subjects.get(row.subject, {}).get('title', row.subject) }}</span>
+          <span style="font-weight:600;color:var(--primary)">{{ row.avg|round|int }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" style="width:{{ row.avg|round|int }}%"></div>
+        </div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px">{{ row.cnt }} тестов</div>
+      </div>
+      {% else %}
+      <div style="color:var(--text-muted);font-size:0.9rem">Пройдите первый тест, чтобы увидеть статистику</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;margin-bottom:16px">История тестов</div>
+    {% if history %}
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Предмет</th>
+          <th>Балл</th>
+          <th>Вопросов</th>
+          <th>Дата</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in history %}
+        <tr>
+          <td>{{ subjects.get(h.subject, {}).get('title', h.subject) }}</td>
+          <td>
+            <span style="font-weight:700;color:{% if h.score >= 80 %}var(--success){% elif h.score >= 50 %}var(--warning){% else %}var(--error){% endif %}">
+              {{ h.score }}%
+            </span>
+          </td>
+          <td>{{ h.questions_count }}</td>
+          <td style="color:var(--text-muted);font-size:0.85rem">{{ h.created_at.strftime('%d.%m.%Y') if h.created_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="color:var(--text-muted);text-align:center;padding:24px 0">Вы ещё не прошли ни одного теста</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

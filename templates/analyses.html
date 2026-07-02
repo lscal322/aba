@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Разборы — {{ subj.title }}{% endblock %}
+{% block content %}
+<div class="container">
+  <a href="/py/subjects/{{ subject }}" class="back-link">← {{ subj.title }}</a>
+  <div class="page-title">🔍 Разборы заданий</div>
+  <div class="page-subtitle">{{ subj.title }} — типовые задачи с подробным анализом</div>
+
+  {% if items %}
+  {% for item in items %}
+  <div class="analysis-card">
+    <div class="analysis-header">
+      <div>
+        <div style="font-weight:700;font-size:1rem">{{ item.task_title }}</div>
+        <div style="opacity:0.8;font-size:0.85rem;margin-top:2px">{{ item.description[:120] }}{% if item.description|length > 120 %}...{% endif %}</div>
+      </div>
+      <span class="analysis-number">Задание {{ item.task_number }}</span>
+    </div>
+    <div class="analysis-body">
+      <p style="color:var(--text);line-height:1.6;margin-bottom:12px">{{ item.description }}</p>
+      <div class="tip-box">
+        💡 <strong>Советы:</strong> {{ item.tips }}
+      </div>
+      {% if item.example_question %}
+      <div class="example-box">
+        <div class="example-label">Пример задания</div>
+        <div style="font-size:0.92rem;line-height:1.5">{{ item.example_question }}</div>
+        {% if item.example_solution %}
+        <div class="example-solution">
+          <strong>Решение:</strong> {{ item.example_solution }}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">📭</div>
+    <div>Разборы для этого предмета пока не добавлены</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

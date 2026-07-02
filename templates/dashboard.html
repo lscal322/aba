@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Главная — ЕГЭ Тренажёр{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Выбор предмета</div>
+  <div class="page-subtitle">Выбери предмет, чтобы начать подготовку.</div>
+
+  <div class="grid-2">
+    {% for sid, subj in subjects.items() %}
+    <a href="/py/subjects/{{ sid }}" class="subject-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <span style="font-size:2.2rem">{{ subj.icon }}</span>
+        <div>
+          <div class="subject-title" style="margin-bottom:2px">{{ subj.title }}</div>
+          <div class="subject-desc" style="margin:0">{{ subj.description }}</div>
+        </div>
+      </div>
+      <div class="progress-bar" style="margin-bottom:6px">
+        <div class="progress-bar-fill" style="width:{{ scores.get(sid,0) }}%"></div>
+      </div>
+      <div class="progress-label">
+        <span>Средний балл: <strong>{{ scores.get(sid,0) }}%</strong></span>
+        <span>{{ stats.get(sid,0) }} тестов</span>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-blue">⏱ {{ subj.time_min }} мин</span>
+        <span class="badge badge-green">{{ subj.tasks }} заданий</span>
+        {% if scores.get(sid,0) >= 80 %}<span class="badge" style="background:#dcfce7;color:#16a34a">✅ Отлично</span>
+        {% elif scores.get(sid,0) >= 50 %}<span class="badge" style="background:#fef3c7;color:#d97706">📈 Прогресс</span>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top:28px" class="grid-4">
+    <div class="stat-card">
+      <div class="stat-value">{{ user.xp }}</div>
+      <div class="stat-label">Очков опыта XP</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ user.tests_completed }}</div>
+      <div class="stat-label">Тестов пройдено</div>
+    </div>
+    <div class="stat-card" style="cursor:pointer" onclick="location.href='/py/mistakes'">
+      <div class="stat-value" style="color:var(--error)">{{ mistake_count }}</div>
+      <div class="stat-label">Ошибок в банке</div>
+    </div>
+    <div class="stat-card" style="cursor:pointer" onclick="location.href='/py/analytics'">
+      <div class="stat-value" style="color:var(--secondary)">📊</div>
+      <div class="stat-label">Моя аналитика</div>
+    </div>
+  </div>
+
+  <div style="margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="card" style="padding:20px">
+      <div style="font-weight:700;margin-bottom:12px;font-size:0.95rem">📈 Динамика баллов</div>
+      <canvas id="scoreChart" height="160"></canvas>
+    </div>
+    <div class="card" style="padding:20px">
+      <div style="font-weight:700;margin-bottom:16px;font-size:0.95rem">🚀 Быстрый старт</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        {% for sid, subj in subjects.items() %}
+        <div style="display:flex;gap:8px;align-items:center">
+          <span>{{ subj.icon }}</span>
+          <a href="/py/subjects/{{ sid }}/exam" class="btn btn-secondary btn-sm" style="flex:1;justify-content:center">🎓 Экзамен</a>
+          <a href="/py/subjects/{{ sid }}/drill" class="btn btn-teal btn-sm" style="flex:1;justify-content:center">🎯 Отработка</a>
+          <a href="/py/subjects/{{ sid }}/adaptive" class="btn btn-sm" style="flex:1;justify-content:center;background:#f3e8ff;color:#7c3aed;border:none">⚡ Адаптив</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+fetch('/py/api/analytics-data').then(r=>r.json()).then(data=>{
+  var results=data.results||[];
+  if(!results.length) return;
+  var labels=results.slice(0,10).map((_,i)=>'Тест '+(i+1)).reverse();
+  var scores=results.slice(0,10).map(r=>r.score).reverse();
+  var ctx=document.getElementById('scoreChart');
+  if(!ctx) return;
+  new Chart(ctx,{
+    type:'line',
+    data:{labels:labels,datasets:[{label:'Балл %',data:scores,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.08)',tension:0.4,fill:true,pointBackgroundColor:'#2563eb',pointRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}
+  });
+});
+</script>
+{% endblock %}

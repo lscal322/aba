@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ЕГЭ Тренажёр{% endblock %}</title>
+  <link rel="stylesheet" href="/py/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+{% if user %}
+<nav class="navbar">
+  <a href="/py/" class="navbar-brand">🎓 ЕГЭ Тренажёр</a>
+  <div class="navbar-links">
+    <a href="/py/">Предметы</a>
+    <a href="/py/analytics">Аналитика</a>
+    <a href="/py/mistakes">🔴 Мои ошибки</a>
+    <a href="/py/arguments">📚 Банк аргументов</a>
+    <a href="/py/news">Новости</a>
+    <a href="/py/leaderboard">Рейтинг</a>
+    <a href="/py/profile">Профиль</a>
+  </div>
+  <div class="navbar-user">
+    <span class="xp-badge">⭐ {{ user.xp }} XP</span>
+    <span style="color:rgba(255,255,255,0.85);font-size:0.88rem">{{ user.name }}</span>
+    <a href="/py/logout"><button class="btn-logout">Выйти</button></a>
+  </div>
+</nav>
+{% endif %}
+{% block content %}{% endblock %}
+<script src="/py/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
